@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit-3 Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 5px;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+        h3 {
+            margin-top: 20px;
+        }
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, monospace;
+        }
+        section {
+            margin-bottom: 40px;
+        }
+        .separator {
+            border-top: 2px dashed #ccc;
+            margin: 30px 0;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        strong {
+            color: #1a5276;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Spring Data JPA and JDBC Notes</h1>
+
+<section>
+    <h2><strong>Why Spring Data JPA</strong></h2>
+    <p>Spring Data JPA is a part of the Spring Data project that provides a higher-level abstraction over JPA and JDBC. It addresses the limitations of plain JDBC:</p>
+
+    <h3>1. Remove Boilerplate Code</h3>
+    <ul>
+        <li>No need to write JDBC code.</li>
+        <li>Developers define interfaces for CRUD operations instead of writing implementations.</li>
+    </ul>
+    <pre><code>
+public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // no need to implement methods manually
+}
+    </code></pre>
+
+    <h3>2. Built-in ORM</h3>
+    <ul>
+        <li>Maps Java entities to database tables automatically.</li>
+        <li>Reduces normal mapping effort and errors.</li>
+    </ul>
+
+    <h3>3. Derived Query Methods</h3>
+    <ul>
+        <li>Supports query generation from method names.</li>
+    </ul>
+    <pre><code>
+List&lt;User&gt; findByLastName(String lastName);
+    </code></pre>
+    <ul>
+        <li>Queries are generated automatically from the method name.</li>
+    </ul>
+
+    <h3>4. Automatic Query Generation</h3>
+    <p>Spring Data JPA generates JPQL or SQL queries automatically based on method names.</p>
+
+    <h3>5. Integration with Spring Boot</h3>
+    <ul>
+        <li>Auto-configuration detects repositories and sets up EntityManager.</li>
+        <li>Transactions are managed easily, reducing manual transaction handling.</li>
+    </ul>
+</section>
+
+<div class="separator"></div>
+
+<section>
+    <h2><strong>Limitations of JDBC API</strong></h2>
+
+    <h3>1. Boilerplate Code</h3>
+    <p>Requires manual handling of opening or closing connections, creating statements, handling exceptions, and managing transactions.</p>
+    <pre><code>
+Connection conn = DriverManager.getConnection(...);
+Statement stmt = conn.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+while (rs.next()) {
+    System.out.println(rs.getString("name"));
+}
+conn.close();
+    </code></pre>
+
+    <h3>2. Complex Mapping</h3>
+    <p>Mapping SQL result sets to Java objects is error-prone for larger models.</p>
+    <pre><code>
+User user = new User();
+user.setId(rs.getInt("id"));
+user.setName(rs.getString("name"));
+    </code></pre>
+
+    <h3>3. Manual Query Construction & Security Risks</h3>
+    <p>SQL queries are built manually and prone to SQL injection.</p>
+    <pre><code>
+String sql = "SELECT * FROM users WHERE username = '" + username 
+             + "' AND password = '" + password + "'";
+    </code></pre>
+    <p>If username or password is malicious, an attacker can bypass authentication.</p>
+
+    <h3>4. No Object-Relational Mapping (ORM)</h3>
+    <p>JDBC does not map objects to the database automatically; developers must manually convert between Java objects and database rows.</p>
+
+    <h3>5. Complex Transaction Management</h3>
+    <p>Developers must explicitly begin, commit, or rollback transactions.</p>
+    <pre><code>
+try {
+    conn.setAutoCommit(false);
+    // ... execute SQL operations
+    conn.commit();
+} catch (SQLException e) {
+    conn.rollback();
+}
+    </code></pre>
+    <p>Managing transactions across multiple DAOs is error-prone.</p>
+</section>
+
+<div class="separator"></div>
+
+<section>
+    <h2><strong>Role of Spring Boot’s Auto-Configuration in Spring Data JPA</strong></h2>
+
+    <h3>1. Automatic EntityManager Support</h3>
+    <p>Spring Boot auto-configures an EntityManagerFactory and EntityManager for JPA entities if <code>spring-boot-starter-data-jpa</code> is on the classpath.</p>
+
+    <h3>2. Automatic DataSource Configuration</h3>
+    <p>If a supported database driver is present, Spring Boot automatically sets up a DataSource using properties from <code>application.properties</code> or <code>application.yml</code>.</p>
+    <pre><code>
+spring.datasource.url=jdbc:mysql://localhost:3306/testdb
+spring.datasource.username=root
+spring.datasource.password=pass
+    </code></pre>
+
+    <h3>3. Default JPA Repository Support</h3>
+    <ul>
+        <li>Spring Boot automatically detects repositories that extend JpaRepository and creates proxy implementations.</li>
+        <li>No need to manually define beans.</li>
+    </ul>
+    <pre><code>
+public interface StudentRepository extends JpaRepository&lt;Student, Integer&gt; {
+    // methods automatically implemented
+}
+    </code></pre>
+
+    <h3>4. Transaction Management</h3>
+    <ul>
+        <li>Auto-configuration sets up a PlatformTransactionManager, enabling declarative transaction support using <code>@Transactional</code>.</li>
+        <li>No need to explicitly begin, commit, or rollback transactions.</li>
+    </ul>
+
+    <h3>5. Sensitive JPA / Hibernate Defaults</h3>
+    <ul>
+        <li>Spring Boot sets sensible defaults for JPA/Hibernate, e.g. <code>spring.jpa.hibernate.ddl-auto=update</code>.</li>
+        <li>This automatically updates database schema based on entity changes.</li>
+    </ul>
+
+    <h3>6. Example Spring Boot Application</h3>
+    <pre><code>
+@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}
+    </code></pre>
+    <p>No explicit configuration for EntityManager or DataSource is required; Spring Boot auto-configures them.</p>
+</section>
+
+<div class="separator"></div>
+
+<section>
+    <h2><strong>Transactions and Spring Transaction Management</strong></h2>
+    <p>Transactions are critical in database operations to ensure the consistency, integrity, and reliability of data. A transaction is a unit of work that either completely succeeds or fails, preventing the system from being left in an inconsistent state.</p>
+
+    <h3>Importance of Transactions</h3>
+    <ul>
+        <li><strong>Atomicity:</strong> All operations succeed or fail together; partial updates are avoided.</li>
+        <li><strong>Consistency:</strong> Database constraints are maintained after every transaction.</li>
+        <li><strong>Isolation:</strong> Transactions prevent interference between concurrent operations.</li>
+        <li><strong>Durability:</strong> Once committed, changes are persistent even in case of a system crash.</li>
+    </ul>
+
+    <h3>Benefits of Using Transactions with Spring</h3>
+    <ul>
+        <li><strong>Declarative Transactions:</strong> Use <code>@Transactional</code> to manage transactions without manual boilerplate code.</li>
+        <li><strong>Automatic Commit/Rollback:</strong> Spring handles automatic commit if operations succeed and rollback on exceptions.</li>
+        <li><strong>Seamless Integration with Spring Data JPA</strong></li>
+        <li><strong>Read-Only Optimization:</strong> Specify <code>@Transactional(readOnly = true)</code> to optimize performance for fetch operations.</li>
+    </ul>
+
+    <h3>Example: Handling Runtime Exceptions with @Transactional</h3>
+
+    <h4>Entity Class</h4>
+    <pre><code>
+@Entity
+public class Student {
+    @Id
+    private int id;
+    private String name;
+    private int marks;
+
+    // getters and setters
+}
+    </code></pre>
+
+    <h4>Repository</h4>
+    <pre><code>
+public interface StudentRepository extends JpaRepository&lt;Student, Integer&gt; {
+    // CRUD methods automatically implemented
+}
+    </code></pre>
+
+    <h4>Service Layer</h4>
+    <pre><code>
+@Service
+public class StudentService {
+
+    @Autowired
+    private StudentRepository repo;
+
+    @Transactional
+    public void updateMarks(int id, int marks) {
+        Student s = repo.findById(id)
+                        .orElseThrow();
+        s.setMarks(marks);
+        repo.save(s);
+
+        if (marks &lt; 0) {
+            throw new RuntimeException("Invalid marks");
+        }
+    }
+}
+    </code></pre>
+    <p>In this example, if marks is less than zero, a runtime exception occurs. The transaction automatically rolls back, ensuring the Student record remains unchanged.</p>
+</section>
+
+<div class="separator"></div>
+
+<section>
+    <h2><strong>Update Operation in Spring Data JPA</strong></h2>
+    <p>In Spring Data JPA, updating a record means modifying an existing entity in the database. Spring uses JPA’s persistent context to detect changes and automatically issues an SQL UPDATE during transaction commit. This is called <strong>dirty checking</strong>.</p>
+
+    <h3>Basic Update Workflow</h3>
+    <ol>
+        <li>Retrieve the entity.</li>
+        <li>Modify the entity.</li>
+        <li>Commit the transaction.</li>
+    </ol>
+    <pre><code>
+Student s = studentRepository.findById(1).orElseThrow();
+s.setCity("Hyderabad");
+s.setMarks(90);
+studentRepository.save(s);  // Spring JPA automatically fires an UPDATE
+    </code></pre>
+
+    <h3>Ways to Perform an Update in Spring Data JPA</h3>
+
+    <h4>1. Update using save() Method</h4>
+    <ul>
+        <li>Most commonly used.</li>
+        <li>Works for both insert and update.</li>
+    </ul>
+    <pre><code>
+studentRepository.save(student);
+    </code></pre>
+
+    <h4>2. Update using @Modifying + @Query</h4>
+    <ul>
+        <li>Useful when you don’t want to load the entire entity.</li>
+        <li>Requires transactional context.</li>
+    </ul>
+    <pre><code>
+@Modifying
+@Transactional
+@Query("UPDATE Student s SET s.marks = :marks WHERE s.id = :id")
+void updateMarks(@Param("id") int id, @Param("marks") int marks);
+    </code></pre>
+
+    <h4>3. Update using EntityManager</h4>
+    <ul>
+        <li>Closer to JPA core API.</li>
+    </ul>
+    <pre><code>
+Student s = entityManager.find(Student.class, id);
+s.setMarks(marks);
+entityManager.persist(s); // updates automatically on transaction commit
+    </code></pre>
+    <p>Changes are detected by dirty checking in the persistence context.</p>
+</section>
+
+</body>
+</html>
