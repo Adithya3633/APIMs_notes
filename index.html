@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JDBC Notes</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        h1, h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>JDBC API Limitations</h1>
+    <h2>1. Boilerplate Code</h2>
+    <pre>
+Connection conn = DriverManager.getConnection(...);
+Statement stmt = conn.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+while (rs.next()) {
+    System.out.println(rs.getString("name"));
+}
+conn.close();
+    </pre>
+    <h2>2. Complex Mapping</h2>
+    <pre>
+User user = new User();
+user.setId(rs.getInt("id"));
+user.setName(rs.getString("name"));
+    </pre>
+    <!-- Add the rest of your notes similarly -->
+</body>
+</html>
