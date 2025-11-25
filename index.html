@@ -2,17 +2,41 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>JDBC Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC API Limitations</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
-        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
-        h1, h2 { color: #333; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, monospace;
+        }
+        section {
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
-    <h1>JDBC API Limitations</h1>
-    <h2>1. Boilerplate Code</h2>
-    <pre>
+    <h1>Limitations of JDBC API</h1>
+    <p>The JDBC API is the standard way to interact with relational databases in Java but has several limitations:</p>
+
+    <section>
+        <h2>1. Boilerplate Code</h2>
+        <p>Requires manual handling of opening or closing connections, creating statements, handling exceptions, and managing transactions.</p>
+        <pre><code>
 Connection conn = DriverManager.getConnection(...);
 Statement stmt = conn.createStatement();
 ResultSet rs = stmt.executeQuery("SELECT * FROM users");
@@ -20,13 +44,48 @@ while (rs.next()) {
     System.out.println(rs.getString("name"));
 }
 conn.close();
-    </pre>
-    <h2>2. Complex Mapping</h2>
-    <pre>
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>2. Complex Mapping</h2>
+        <p>Mapping SQL result sets to Java objects is error-prone for larger models.</p>
+        <pre><code>
 User user = new User();
 user.setId(rs.getInt("id"));
 user.setName(rs.getString("name"));
-    </pre>
-    <!-- Add the rest of your notes similarly -->
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>3. Manual Query Construction & Security Risks</h2>
+        <p>SQL queries are built manually and prone to SQL injection.</p>
+        <pre><code>
+String sql = "SELECT * FROM users WHERE username = '" + username 
+             + "' AND password = '" + password + "'";
+        </code></pre>
+        <p>If username or password is malicious, an attacker can bypass authentication.</p>
+    </section>
+
+    <section>
+        <h2>4. No Object-Relational Mapping (ORM)</h2>
+        <p>JDBC does not map objects to the database automatically; developers must manually convert between Java objects and database rows.</p>
+    </section>
+
+    <section>
+        <h2>5. Complex Transaction Management</h2>
+        <p>Developers must explicitly begin, commit, or rollback transactions.</p>
+        <pre><code>
+try {
+    conn.setAutoCommit(false);
+    // ... execute SQL operations
+    conn.commit();
+} catch (SQLException e) {
+    conn.rollback();
+}
+        </code></pre>
+        <p>Managing transactions across multiple DAOs is error-prone.</p>
+    </section>
+
 </body>
 </html>
