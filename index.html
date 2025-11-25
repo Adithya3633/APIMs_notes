@@ -3,303 +3,896 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spring Data JPA Guide</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <title>Spring Data JPA - Complete Guide</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
-            color: #333;
+            box-sizing: border-box;
         }
 
-        header {
-            background-color: #1976d2;
-            color: white;
-            padding: 1rem 2rem;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
             text-align: center;
         }
 
-        main {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 1rem 2rem;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        h1, h2, h3, h4 {
-            color: #1976d2;
-        }
-
         h2 {
-            margin-top: 2rem;
-            border-bottom: 2px solid #1976d2;
-            padding-bottom: 0.2rem;
+            color: #764ba2;
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid #764ba2;
+            padding-left: 15px;
         }
 
         h3 {
-            margin-top: 1.5rem;
+            color: #667eea;
+            font-size: 1.5rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
         }
 
         p {
-            margin: 0.5rem 0;
+            margin-bottom: 15px;
+            text-align: justify;
+            font-size: 1.05rem;
         }
 
-        b {
-            font-weight: bold;
+        strong {
+            color: #764ba2;
+            font-weight: 600;
         }
 
-        code, pre {
-            font-family: 'Courier New', Courier, monospace;
-            background: #272822;
+        code {
+            background-color: #f4f4f4;
+            color: #e83e8c;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        .code-block {
+            background-color: #2d2d2d;
             color: #f8f8f2;
-            padding: 0.3rem 0.5rem;
-            border-radius: 4px;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            line-height: 1.6;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
         }
 
-        pre {
-            overflow-x: auto;
-            padding: 1rem;
+        .code-block code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .keyword {
+            color: #66d9ef;
+        }
+
+        .string {
+            color: #e6db74;
+        }
+
+        .class-name {
+            color: #a6e22e;
+        }
+
+        .annotation {
+            color: #f92672;
+        }
+
+        .comment {
+            color: #75715e;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+        }
+
+        li strong {
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .highlight-box {
+            background-color: #f0f7ff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .highlight-box strong {
+            color: #667eea;
         }
 
         .section {
-            margin-bottom: 2rem;
+            margin-bottom: 40px;
         }
 
-        ul {
-            margin-left: 1.5rem;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 2px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f0f7ff;
+        }
+
+        .example-label {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 10px 15px;
+            border-left: 4px solid #2e7d32;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+            border-radius: 3px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .benefit-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .benefit-card h4 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .limit-item {
+            background-color: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .limit-item strong {
+            color: #ff6f00;
         }
 
         @media (max-width: 768px) {
-            main {
-                padding: 1rem;
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .code-block {
+                padding: 15px;
+                font-size: 0.85rem;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            p {
+                text-align: left;
+                font-size: 1rem;
+            }
+
+            li {
+                font-size: 1rem;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top:hover {
+            background-color: #764ba2;
+            transform: translateY(-5px);
+        }
+
+        .back-to-top.show {
+            display: flex;
+        }
+
+        @media (max-width: 480px) {
+            .back-to-top {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Spring Data JPA - Complete Guide</h1>
 
-<header>
-    <h1>Spring Data JPA Complete Guide</h1>
-    <p>All concepts, examples, and best practices</p>
-</header>
+        <!-- Section 1: Why Spring Data JPA -->
+        <div class="section">
+            <h2>Why Spring Data JPA?</h2>
+            <p>Spring Data JPA is a part of the Spring Data project that provides a higher-level abstraction over JPA and JDBC. It addresses the limitations of plain JDBC:</p>
 
-<main>
-    <section class="section">
-        <h2>Why Spring Data JPA</h2>
-        <p><b>Spring Data JPA</b> is a part of the Spring Data project that provides a higher-level abstraction over JPA and JDBC. It addresses the limitations of plain JDBC:</p>
-        
-        <h3>1. Remove Boilerplate Code</h3>
-        <p>No need to write JDBC code. Developers define interfaces for CRUD operations instead of writing implementations.</p>
-        <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
-    // no need to implement methods manually
-}</code></pre>
-        
-        <h3>2. Built-in ORM</h3>
-        <p>Maps Java entities to database tables automatically. Reduces normal mapping effort and errors.</p>
-        
-        <h3>3. Derived Query Methods</h3>
-        <p>Supports query generation from method names.</p>
-        <pre><code>List&lt;User&gt; findByLastName(String lastName);</code></pre>
-        
-        <h3>4. Automatic Query Generation</h3>
-        <p>Spring Data JPA generates JPQL or SQL queries automatically based on method names.</p>
-        
-        <h3>5. Integration with Spring Boot</h3>
-        <p>Auto-configuration detects repositories and sets up EntityManager. Transactions are managed easily.</p>
-    </section>
+            <h3>1. Remove Boilerplate Code</h3>
+            <p>There is <strong>no need to write JDBC code</strong>. Developers define interfaces for CRUD operations instead of writing implementations.</p>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">UserRepository</span> <span class="keyword">extends</span> <span class="class-name">JpaRepository</span>&lt;<span class="class-name">User</span>, <span class="class-name">Long</span>&gt; {
+    <span class="comment">// no need to implement methods manually</span>
+}</code>
+            </div>
 
-    <section class="section">
-        <h2>Limitations of JDBC API</h2>
-        <ul>
-            <li><b>Boilerplate Code:</b> Requires manual handling of connections, statements, exceptions, and transactions.</li>
-            <li><b>Complex Mapping:</b> Mapping SQL result sets to Java objects is error-prone.</li>
-            <li><b>Manual Query Construction & Security Risks:</b> Prone to SQL injection.</li>
-            <li><b>No ORM:</b> JDBC does not map objects automatically.</li>
-            <li><b>Complex Transaction Management:</b> Developers must manually begin, commit, or rollback transactions.</li>
-        </ul>
-    </section>
+            <h3>2. Built-in ORM</h3>
+            <p>Spring Data JPA <strong>maps Java entities to database tables automatically</strong>. This reduces mapping effort and errors significantly.</p>
 
-    <section class="section">
-        <h2>Spring Boot Auto-Configuration in Spring Data JPA</h2>
-        <ul>
-            <li><b>Automatic EntityManager Support:</b> Auto-configures EntityManagerFactory and EntityManager.</li>
-            <li><b>Automatic DataSource Configuration:</b> Configured using application.properties/yml.</li>
-            <pre><code>spring.datasource.url=jdbc:mysql://localhost:3306/testdb
-spring.datasource.username=root
-spring.datasource.password=pass</code></pre>
-            <li><b>Default JPA Repository Support:</b> Spring Boot detects repositories extending JpaRepository.</li>
-            <li><b>Transaction Management:</b> PlatformTransactionManager is auto-configured, supporting @Transactional.</li>
-            <li><b>Sensible JPA/Hibernate Defaults:</b> e.g., <code>spring.jpa.hibernate.ddl-auto=update</code></li>
-        </ul>
+            <h3>3. Derived Query Methods</h3>
+            <p>Supports query generation from method names, enabling automatic JPQL/SQL query generation.</p>
+            <div class="code-block">
+                <code><span class="class-name">List</span>&lt;<span class="class-name">User</span>&gt; findByLastName(<span class="class-name">String</span> lastName);
+<span class="comment">// Queries are generated automatically from the method name</span></code>
+            </div>
 
-        <h3>Example Spring Boot Application</h3>
-        <pre><code>@SpringBootApplication
-public class DemoApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
-    }
-}</code></pre>
-    </section>
+            <h3>4. Automatic Query Generation</h3>
+            <p>Spring Data JPA <strong>generates JPQL or SQL queries automatically</strong> based on method names, reducing manual query writing.</p>
 
-    <section class="section">
-        <h2>Transactions and Spring Transaction Management</h2>
-        <p>Transactions ensure <b>consistency, integrity, and reliability</b> of data.</p>
+            <h3>5. Integration with Spring Boot</h3>
+            <ul>
+                <li><strong>Auto-configuration</strong> detects repositories and sets up EntityManager</li>
+                <li><strong>Transaction management</strong> is handled easily, reducing manual transaction handling</li>
+            </ul>
 
-        <h3>Importance of Transactions</h3>
-        <ul>
-            <li><b>Atomicity:</b> All operations succeed or fail together.</li>
-            <li><b>Consistency:</b> Database constraints are maintained.</li>
-            <li><b>Isolation:</b> Prevents interference between concurrent operations.</li>
-            <li><b>Durability:</b> Committed changes persist even after crashes.</li>
-        </ul>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h4>Less Code</h4>
+                    <p>No boilerplate JDBC code required</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Type Safety</h4>
+                    <p>Compile-time checking with interfaces</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Easy Queries</h4>
+                    <p>Query generation from method names</p>
+                </div>
+                <div class="benefit-card">
+                    <h4>Transaction Support</h4>
+                    <p>Automatic transaction management</p>
+                </div>
+            </div>
+        </div>
 
-        <h3>Benefits with Spring</h3>
-        <ul>
-            <li>Declarative transactions with @Transactional.</li>
-            <li>Automatic commit/rollback on success or exception.</li>
-            <li>Read-only optimization: <code>@Transactional(readOnly = true)</code></li>
-        </ul>
+        <!-- Section 2: Limitations of JDBC -->
+        <div class="section">
+            <h2>Limitations of JDBC API</h2>
+            <p>The JDBC API is the standard way to interact with relational databases in Java but has several limitations:</p>
 
-        <h3>Example: Handling Runtime Exceptions</h3>
-        <pre><code>@Entity
-public class Student {
-    @Id
-    private int id;
-    private String name;
-    private int marks;
-    // getters and setters
+            <h3>1. Boilerplate Code</h3>
+            <p>JDBC <strong>requires manual handling</strong> of opening/closing connections, creating statements, handling exceptions, and managing transactions.</p>
+            <div class="code-block">
+                <code><span class="class-name">Connection</span> conn = <span class="class-name">DriverManager</span>.getConnection(...);
+<span class="class-name">Statement</span> stmt = conn.createStatement();
+<span class="class-name">ResultSet</span> rs = stmt.executeQuery(<span class="string">"SELECT * FROM users"</span>);
+<span class="keyword">while</span> (rs.next()) {
+    <span class="class-name">System</span>.out.println(rs.getString(<span class="string">"name"</span>));
 }
+conn.close();</code>
+            </div>
 
-@Service
-public class StudentService {
-    @Autowired
-    private StudentRepository repo;
+            <h3>2. Complex Mapping</h3>
+            <p>Mapping SQL result sets to Java objects is <strong>error-prone for larger models</strong>.</p>
+            <div class="code-block">
+                <code><span class="class-name">User</span> user = <span class="keyword">new</span> <span class="class-name">User</span>();
+user.setId(rs.getInt(<span class="string">"id"</span>));
+user.setName(rs.getString(<span class="string">"name"</span>));</code>
+            </div>
 
-    @Transactional
-    public void updateMarks(int id, int marks) {
-        Student s = repo.findById(id).orElseThrow();
+            <h3>3. Manual Query Construction & Security Risks</h3>
+            <p>SQL queries are built manually and <strong>prone to SQL injection</strong>.</p>
+            <div class="code-block">
+                <code><span class="class-name">String</span> sql = <span class="string">"SELECT * FROM users WHERE username = '"</span> + username
+             + <span class="string">"' AND password = '"</span> + password + <span class="string">"'"</span>;
+<span class="comment">// If username or password is malicious, an attacker can bypass authentication</span></code>
+            </div>
+
+            <h3>4. No Object-Relational Mapping (ORM)</h3>
+            <p>JDBC does not map objects to the database automatically; developers <strong>must manually convert between Java objects and database rows</strong>.</p>
+
+            <h3>5. Complex Transaction Management</h3>
+            <p>Developers must explicitly <strong>begin, commit, or rollback</strong> transactions.</p>
+            <div class="code-block">
+                <code><span class="keyword">try</span> {
+    conn.setAutoCommit(<span class="keyword">false</span>);
+    <span class="comment">// ... execute SQL operations</span>
+    conn.commit();
+} <span class="keyword">catch</span> (<span class="class-name">SQLException</span> e) {
+    conn.rollback();
+}</code>
+            </div>
+            <p>Managing transactions across multiple DAOs is <strong>error-prone and tedious</strong>.</p>
+        </div>
+
+        <!-- Section 3: Spring Boot Auto-Configuration -->
+        <div class="section">
+            <h2>Role of Spring Boot's Auto-Configuration in Spring Data JPA</h2>
+            <p>Spring Boot's Auto-Configuration simplifies the setup of Spring Data JPA by automatically configuring necessary components based on dependencies in the classpath. It reduces boilerplate code and allows developers to start quickly with minimal configuration.</p>
+
+            <h3>1. Automatic EntityManager Support</h3>
+            <p>Spring Boot auto-configures an <strong>EntityManagerFactory and EntityManager</strong> for JPA entities if <code>spring-boot-starter-data-jpa</code> is on the classpath.</p>
+
+            <h3>2. Automatic DataSource Configuration</h3>
+            <p>If a supported database driver is present, Spring Boot automatically sets up a <strong>DataSource</strong> using properties from <code>application.properties</code> or <code>application.yml</code>.</p>
+            <div class="example-label">Example:</div>
+            <div class="code-block">
+                <code>spring.datasource.url=jdbc:mysql://localhost:3306/testdb
+spring.datasource.username=root
+spring.datasource.password=pass</code>
+            </div>
+
+            <h3>3. Default JPA Repository Support</h3>
+            <p>Spring Boot automatically detects repositories that extend <strong>JpaRepository</strong> and creates proxy implementations. <strong>No need to manually define beans</strong>.</p>
+            <div class="example-label">Example:</div>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">StudentRepository</span> <span class="keyword">extends</span> <span class="class-name">JpaRepository</span>&lt;<span class="class-name">Student</span>, <span class="class-name">Integer</span>&gt; {
+    <span class="comment">// methods automatically implemented</span>
+}</code>
+            </div>
+
+            <h3>4. Transaction Management</h3>
+            <p>Auto-configuration sets up a <strong>PlatformTransactionManager</strong>, enabling declarative transaction support using <code>@Transactional</code>. <strong>No need to explicitly begin, commit, or rollback</strong> transactions.</p>
+
+            <h3>5. Sensible JPA / Hibernate Defaults</h3>
+            <p>Spring Boot sets sensible defaults for JPA/Hibernate:</p>
+            <div class="code-block">
+                <code>spring.jpa.hibernate.ddl-auto=update
+<span class="comment">// This automatically updates database schema based on entity changes</span></code>
+            </div>
+
+            <h3>6. Example Spring Boot Application</h3>
+            <div class="code-block">
+                <code><span class="annotation">@SpringBootApplication</span>
+<span class="keyword">public class</span> <span class="class-name">DemoApplication</span> {
+    <span class="keyword">public static void</span> main(<span class="class-name">String</span>[] args) {
+        <span class="class-name">SpringApplication</span>.run(<span class="class-name">DemoApplication</span>.<span class="keyword">class</span>, args);
+    }
+}
+<span class="comment">// No explicit configuration for EntityManager or DataSource required</span></code>
+            </div>
+        </div>
+
+        <!-- Section 4: Transactions -->
+        <div class="section">
+            <h2>Transactions and Spring Transaction Management</h2>
+            <p>Transactions are <strong>critical in database operations</strong> to ensure the consistency, integrity, and reliability of data.</p>
+            <p>A <strong>transaction is a unit of work</strong> that either completely succeeds or fails, preventing the system from being left in an inconsistent state.</p>
+
+            <h3>Importance of Transactions</h3>
+            <ul>
+                <li><strong>Atomicity:</strong> All operations in a transaction succeed or fail together. Partial updates are avoided.</li>
+                <li><strong>Consistency:</strong> Database constraints are maintained after every transaction.</li>
+                <li><strong>Isolation:</strong> Transactions prevent interference between concurrent operations.</li>
+                <li><strong>Durability:</strong> Once committed, changes are persistent even in case of a system crash.</li>
+            </ul>
+
+            <h3>Benefits of Using Transactions with Spring</h3>
+            <ul>
+                <li><strong>Declarative Transactions:</strong> Use <code>@Transactional</code> to manage transactions without writing manual boilerplate code.</li>
+                <li><strong>Automatic Commit/Rollback:</strong> Spring handles automatic commit if operations succeed and rollback on exceptions.</li>
+                <li><strong>Seamless Integration with Spring Data JPA:</strong> Works perfectly with repository methods.</li>
+                <li><strong>Read-Only Optimization:</strong> Specify <code>@Transactional(readOnly = true)</code> to optimize performance for fetch operations.</li>
+            </ul>
+
+            <h3>Example: Handling Runtime Exceptions with @Transactional</h3>
+
+            <h4>Entity Class</h4>
+            <div class="code-block">
+                <code><span class="annotation">@Entity</span>
+<span class="keyword">public class</span> <span class="class-name">Student</span> {
+    <span class="annotation">@Id</span>
+    <span class="keyword">private int</span> id;
+    <span class="keyword">private</span> <span class="class-name">String</span> name;
+    <span class="keyword">private int</span> marks;
+
+    <span class="comment">// getters and setters</span>
+}</code>
+            </div>
+
+            <h4>Repository</h4>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">StudentRepository</span> <span class="keyword">extends</span> <span class="class-name">JpaRepository</span>&lt;<span class="class-name">Student</span>, <span class="class-name">Integer</span>&gt; {
+    <span class="comment">// CRUD methods automatically implemented</span>
+}</code>
+            </div>
+
+            <h4>Service Layer</h4>
+            <div class="code-block">
+                <code><span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="class-name">StudentService</span> {
+
+    <span class="annotation">@Autowired</span>
+    <span class="keyword">private</span> <span class="class-name">StudentRepository</span> repo;
+
+    <span class="annotation">@Transactional</span>
+    <span class="keyword">public void</span> updateMarks(<span class="keyword">int</span> id, <span class="keyword">int</span> marks) {
+        <span class="class-name">Student</span> s = repo.findById(id)
+                        .orElseThrow();
         s.setMarks(marks);
         repo.save(s);
-        if (marks &lt; 0) {
-            throw new RuntimeException("Invalid marks");
+
+        <span class="keyword">if</span> (marks &lt; 0) {
+            <span class="keyword">throw new</span> <span class="class-name">RuntimeException</span>(<span class="string">"Invalid marks"</span>);
         }
     }
-}</code></pre>
-    </section>
+}</code>
+            </div>
 
-    <section class="section">
-        <h2>Custom Repository Implementation</h2>
-        <pre><code>public interface A {
-    void function();
-}
+            <div class="highlight-box">
+                <p><strong>What happens:</strong> If marks is less than zero, a runtime exception occurs. The transaction automatically rolls back, ensuring the Student record remains unchanged.</p>
+            </div>
+        </div>
 
-public class B implements A {
-    private EntityManager em;
+        <!-- Section 5: Update Operations -->
+        <div class="section">
+            <h2>Update Operation in Spring Data JPA</h2>
+            <p>In Spring Data JPA, updating a record means modifying an existing entity in the database.</p>
+            <p>Spring uses <strong>JPA's persistent context to detect changes</strong> to an entity and automatically issues an SQL UPDATE during transaction commit. This is called <strong>dirty checking</strong>.</p>
 
-    @Override
-    public void function() {
-        // logic using EntityManager
+            <h3>Basic Update Workflow</h3>
+            <p>Spring Data JPA typically performs updates using the following steps:</p>
+            <ol>
+                <li>Retrieve the entity</li>
+                <li>Modify the entity</li>
+                <li>Commit the transaction</li>
+            </ol>
+            <div class="example-label">Example:</div>
+            <div class="code-block">
+                <code><span class="class-name">Student</span> s = studentRepository.findById(1).orElseThrow();
+s.setCity(<span class="string">"Hyderabad"</span>);
+s.setMarks(90);
+studentRepository.save(s);  <span class="comment">// Spring JPA automatically fires an UPDATE</span></code>
+            </div>
+
+            <h3>Ways to Perform an Update in Spring Data JPA</h3>
+
+            <h4>1. Update using save() Method</h4>
+            <p><strong>Most commonly used</strong>. Works for both insert and update.</p>
+            <div class="code-block">
+                <code>studentRepository.save(student);</code>
+            </div>
+
+            <h4>2. Update using @Modifying + @Query</h4>
+            <p>Useful when you <strong>don't want to load the entire entity</strong>. Requires transactional context.</p>
+            <div class="code-block">
+                <code><span class="annotation">@Modifying</span>
+<span class="annotation">@Transactional</span>
+<span class="annotation">@Query</span>(<span class="string">"UPDATE Student s SET s.marks = :marks WHERE s.id = :id"</span>)
+<span class="keyword">void</span> updateMarks(<span class="annotation">@Param</span>(<span class="string">"id"</span>) <span class="keyword">int</span> id, <span class="annotation">@Param</span>(<span class="string">"marks"</span>) <span class="keyword">int</span> marks);</code>
+            </div>
+
+            <h4>3. Update using EntityManager</h4>
+            <p><strong>Closer to JPA core API</strong>. Changes are detected by dirty checking in the persist context.</p>
+            <div class="code-block">
+                <code><span class="class-name">Student</span> s = entityManager.find(<span class="class-name">Student</span>.<span class="keyword">class</span>, id);
+s.setMarks(marks);
+entityManager.persist(s); <span class="comment">// updates automatically on transaction commit</span></code>
+            </div>
+        </div>
+
+        <!-- Section 6: Custom Repository Implementation -->
+        <div class="section">
+            <h2>Custom Repository Implementation using Spring Data JPA</h2>
+            <p>Spring Data JPA automatically creates basic CRUD operations using interfaces like <strong>JpaRepository</strong>. However, sometimes we need <strong>custom business logic, dynamic queries, native SQL, or JPQL queries</strong>. In such cases, we create a custom repository implementation.</p>
+            <p>It gives <strong>full control over complex queries, performance tuning, and integration with EntityManager</strong>.</p>
+
+            <h3>Implementation Steps</h3>
+            <p>Custom repository implementation mainly includes 3 steps:</p>
+
+            <h4>Step 1: Creating Interface</h4>
+            <p>Create a custom interface to <strong>declare methods you want to implement manually</strong>.</p>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">A</span> {
+    <span class="keyword">void</span> function();
+}</code>
+            </div>
+
+            <h4>Step 2: Implementation of Interface</h4>
+            <p>Implement the above interface and <strong>write the actual logic using EntityManager</strong>.</p>
+            <div class="code-block">
+                <code><span class="keyword">public class</span> <span class="class-name">B</span> <span class="keyword">implements</span> <span class="class-name">A</span> {
+    <span class="keyword">private</span> <span class="class-name">EntityManager</span> em;
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public void</span> function() {
+        <span class="comment">// logic using EntityManager</span>
     }
-}
+}</code>
+            </div>
 
-public interface ARepository extends JpaRepository&lt;Entity, ID&gt;, A {
-    // can use both built-in and custom methods
-}</code></pre>
-    </section>
+            <h4>Step 3: Extend with JPA Repository</h4>
+            <p><strong>Combine with JpaRepository</strong> and your custom interface using extends.</p>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">ARepository</span> <span class="keyword">extends</span> <span class="class-name">JpaRepository</span>&lt;<span class="class-name">Entity</span>, <span class="class-name">ID</span>&gt;, <span class="class-name">A</span> {
+    <span class="comment">// can use both built-in and custom methods</span>
+}</code>
+            </div>
 
-    <section class="section">
-        <h2>Optimizing Queries</h2>
-        <ul>
-            <li>Prefer JPQL or repository methods over native SQL.</li>
-            <li>Use pagination for large datasets.</li>
-            <li>Avoid N+1 select problem with <code>@EntityGraph</code>.</li>
-            <li>Write efficient custom queries with <code>@Query</code>.</li>
-            <li>Monitor SQL logs:
-                <pre><code>spring.data.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true</code></pre>
-            </li>
-            <li>Index frequently queried columns.</li>
-            <li>Keep transactions short.</li>
-        </ul>
-    </section>
+            <div class="example-label">Example: Student Repository Implementation</div>
+            <p>Student repository implementation for updating marks details.</p>
+            <div class="code-block">
+                <code><span class="annotation">@Repository</span>
+<span class="keyword">public class</span> <span class="class-name">StudentCustomRepository</span> <span class="keyword">implements</span> <span class="class-name">StudentCustom</span> {
+    
+    <span class="annotation">@Autowired</span>
+    <span class="keyword">private</span> <span class="class-name">EntityManager</span> entityManager;
 
-    <section class="section">
-        <h2>Project Structure & Naming Conventions</h2>
-        <pre><code>com.app
-├─ entity       // JPA entities
-├─ repository   // Spring Data JPA interfaces
-├─ service      // Business logic
-├─ controller   // REST controllers
-└─ config       // JPA & other configurations
-</code></pre>
-
-        <p><b>Naming Conventions:</b></p>
-        <ul>
-            <li>Entities: PascalCase (Student, Order)</li>
-            <li>Repositories: Entity + Repository (StudentRepository)</li>
-            <li>Services: Entity + Service (StudentService)</li>
-            <li>Controllers: Entity + Controller (StudentController)</li>
-            <li>Packages: lowercase</li>
-            <li>Methods: camelCase</li>
-        </ul>
-    </section>
-
-    <section class="section">
-        <h2>Native SQL Queries</h2>
-        <pre><code>@Query(value = "SELECT * FROM student WHERE city = :city", nativeQuery = true)
-List&lt;Student&gt; findByCity(@Param("city") String city);
-
-@RestController
-public class StudentController {
-    @Autowired
-    private StudentService service;
-
-    @GetMapping("/city/{c}")
-    public List&lt;Student&gt; getCity(@PathVariable("c") String c) {
-        return service.getByCity(c);
+    <span class="annotation">@Transactional</span>
+    <span class="keyword">public void</span> updateMarks(<span class="keyword">int</span> id, <span class="keyword">int</span> marks) {
+        <span class="class-name">Student</span> student = entityManager.find(<span class="class-name">Student</span>.<span class="keyword">class</span>, id);
+        <span class="keyword">if</span> (student != <span class="keyword">null</span>) {
+            student.setMarks(marks);
+            entityManager.persist(student);
+        }
     }
-}</code></pre>
-    </section>
+}</code>
+            </div>
+        </div>
 
-    <section class="section">
-        <h2>Sorting in Spring Data JPA</h2>
-        <pre><code>@RestController
-public class StudentController {
-    @Autowired
-    private StudentRepository repo;
+        <!-- Section 7: Query Optimization -->
+        <div class="section">
+            <h2>Best Practices for Optimizing Queries and Improving Performance</h2>
+            <p>Optimizing queries in Spring Data JPA is <strong>most important to reduce latency and minimize unnecessary data load</strong>.</p>
 
-    @GetMapping("/students/sort")
-    public List&lt;Student&gt; getSorted() {
-        return repo.findAll(Sort.by("marks").descending());
+            <h3>1. Prefer JPQL or Repository Methods over Native SQL Queries</h3>
+            <p>Spring Data JPA <strong>generates optimized JPQL queries automatically</strong>.</p>
+            <div class="example-label">Example:</div>
+            <div class="code-block">
+                <code><span class="class-name">List</span>&lt;<span class="class-name">User</span>&gt; findByCity(<span class="class-name">String</span> city);</code>
+            </div>
+
+            <h3>2. Use Pagination for Large Result Sets</h3>
+            <p><strong>Fetching all rows increases memory usage</strong>. Pagination helps load data in chunks.</p>
+            <div class="example-label">Example:</div>
+            <div class="code-block">
+                <code><span class="class-name">Page</span>&lt;<span class="class-name">User</span>&gt; findByStatus(<span class="class-name">String</span> status, <span class="class-name">Pageable</span> pageable);</code>
+            </div>
+
+            <h3>3. Avoid N+1 Select Problem</h3>
+            <p>Use <code>@EntityGraph</code> to <strong>load related entities in a single query</strong>.</p>
+
+            <h3>4. Write Efficient Custom Queries</h3>
+            <p>When derived queries become complex, use <code>@Query</code> with <strong>optimized JPQL</strong>.</p>
+
+            <h3>5. Monitor SQL Logs</h3>
+            <p>Enable SQL logging to <strong>detect slow or unnecessary queries</strong>.</p>
+            <div class="code-block">
+                <code>spring.data.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true</code>
+            </div>
+
+            <h3>6. Index Frequently Queried Columns</h3>
+            <p>Database-level indexes <strong>speed up search and join operations</strong>.</p>
+
+            <h3>7. Keep Transactions Short</h3>
+            <p><strong>Long transactions block connections and delay query execution</strong>. Keep them focused and brief.</p>
+        </div>
+
+        <!-- Section 8: Project Structure -->
+        <div class="section">
+            <h2>Best Practices for Spring Data JPA Project Structure</h2>
+            <p>A <strong>well-structured Spring Data JPA project</strong> improves maintainability and readability.</p>
+
+            <h3>1. Follow Standard Layered Architecture</h3>
+            <p>Use <strong>clear package separation</strong> for better organization:</p>
+            <div class="code-block">
+                <code>com.app
+    ├─ entity       <span class="comment">// JPA entities</span>
+    ├─ repository   <span class="comment">// Spring Data JPA interfaces</span>
+    ├─ service      <span class="comment">// Business logic</span>
+    ├─ controller   <span class="comment">// REST controllers</span>
+    └─ config       <span class="comment">// JPA and other configurations</span></code>
+            </div>
+
+            <h3>2. Follow Naming Conventions</h3>
+            <ul>
+                <li><strong>Entities:</strong> Represent the class; use singular nouns. <em>Examples: Student, Order</em></li>
+                <li><strong>Repositories:</strong> Entity name + Repository. <em>Examples: StudentRepository, OrderRepository</em></li>
+                <li><strong>Services:</strong> Entity name + Service. <em>Examples: StudentService, OrderService</em></li>
+                <li><strong>Controllers:</strong> Entity name + Controller. <em>Examples: StudentController</em></li>
+            </ul>
+
+            <h3>3. Keep Repositories Simple</h3>
+            <p>Use repositories <strong>only for CRUD and simple queries</strong>. Move complex logic to custom repository implementations.</p>
+
+            <h3>4. Use Consistent Naming Conventions</h3>
+            <ul>
+                <li><strong>Package names:</strong> lowercase</li>
+                <li><strong>Class names:</strong> PascalCase</li>
+                <li><strong>Method names:</strong> camelCase</li>
+                <li><em>Examples: findByCity(), updateMarks()</em></li>
+            </ul>
+
+            <h3>5. Keep Entities Clean</h3>
+            <p><strong>No business logic inside entities</strong>. Keep them as data containers.</p>
+
+            <h3>6. Centralize Configuration</h3>
+            <p>Pull all data sources and JPA configurations under a <strong>config package</strong>.</p>
+        </div>
+
+        <!-- Section 9: Native SQL Queries -->
+        <div class="section">
+            <h2>Native SQL Query in Spring Data JPA</h2>
+            <p>The <code>@Query</code> annotation allows you to write custom queries. Using <code>nativeQuery = true</code>, we can run <strong>pure SQL while Spring Boot handles connection, EntityManager, and mapping</strong>.</p>
+
+            <h3>Basic Syntax</h3>
+            <div class="code-block">
+                <code><span class="annotation">@Query</span>(<span class="string">value = "SELECT * FROM student WHERE city = :city"</span>, nativeQuery = <span class="keyword">true</span>)
+<span class="class-name">List</span>&lt;<span class="class-name">Student</span>&gt; findByCity(<span class="annotation">@Param</span>(<span class="string">"city"</span>) <span class="class-name">String</span> city);</code>
+            </div>
+
+            <div class="highlight-box">
+                <p><code>nativeQuery = true</code> tells Spring Data JPA to use <strong>raw SQL</strong>. Spring Boot auto-configures EntityManager and DataSource, and mapping to the Student entity happens automatically.</p>
+            </div>
+
+            <h3>Example: Repository</h3>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">StudentRepository</span> <span class="keyword">extends</span> <span class="class-name">JpaRepository</span>&lt;<span class="class-name">Student</span>, <span class="class-name">Integer</span>&gt; {
+
+    <span class="annotation">@Query</span>(<span class="string">value = "SELECT * FROM student WHERE city = :city"</span>, nativeQuery = <span class="keyword">true</span>)
+    <span class="class-name">List</span>&lt;<span class="class-name">Student</span>&gt; findByCity(<span class="annotation">@Param</span>(<span class="string">"city"</span>) <span class="class-name">String</span> city);
+}</code>
+            </div>
+
+            <h3>Example: Controller</h3>
+            <div class="code-block">
+                <code><span class="annotation">@RestController</span>
+<span class="keyword">public class</span> <span class="class-name">StudentController</span> {
+
+    <span class="annotation">@Autowired</span>
+    <span class="keyword">private</span> <span class="class-name">StudentService</span> service;
+
+    <span class="annotation">@GetMapping</span>(<span class="string">"/city/{c}"</span>)
+    <span class="keyword">public</span> <span class="class-name">List</span>&lt;<span class="class-name">Student</span>&gt; getCity(<span class="annotation">@PathVariable</span>(<span class="string">"c"</span>) <span class="class-name">String</span> c) {
+        <span class="keyword">return</span> service.getByCity(c);
     }
-}</code></pre>
-    </section>
+}</code>
+            </div>
 
-    <section class="section">
-        <h2>JPQL & Named Queries</h2>
-        <pre><code>@Entity
-@NamedQuery(
-    name = "Student.findByCity",
-    query = "SELECT s FROM Student s WHERE s.city = :city"
+            <div class="highlight-box">
+                <p>Using <code>nativeQuery = true</code> allows Spring Data JPA to <strong>execute raw SQL</strong>, while Spring Boot handles all underlying configurations and entity mapping automatically.</p>
+            </div>
+        </div>
+
+        <!-- Section 10: Sorting -->
+        <div class="section">
+            <h2>Sorting in Spring Data JPA</h2>
+            <p>Sorting in Spring Data JPA provides <strong>built-in sorting support using the Sort class</strong>.</p>
+            <p><strong>Sorting can be applied to any repository query</strong> without writing JPQL. Spring Boot auto-configures JPA components, so sorting works out of the box. Sorting can be ascending or descending depending on any entity field.</p>
+
+            <h3>Example: Entity</h3>
+            <div class="code-block">
+                <code><span class="annotation">@Entity</span>
+<span class="keyword">public class</span> <span class="class-name">Student</span> {
+
+    <span class="annotation">@Id</span>
+    <span class="keyword">private int</span> ID;
+
+    <span class="keyword">private</span> <span class="class-name">String</span> name;
+
+    <span class="keyword">private int</span> marks;
+}</code>
+            </div>
+
+            <h3>Example: Repository</h3>
+            <div class="code-block">
+                <code><span class="keyword">public interface</span> <span class="class-name">StudentRepository</span> <span class="keyword">extends</span> <span class="class-name">JpaRepository</span>&lt;<span class="class-name">Student</span>, <span class="class-name">Integer</span>&gt; {
+    <span class="comment">// built-in methods can accept Sort parameter</span>
+}</code>
+            </div>
+
+            <h3>Example: Controller to Return Sorted List</h3>
+            <div class="code-block">
+                <code><span class="annotation">@RestController</span>
+<span class="keyword">public class</span> <span class="class-name">StudentController</span> {
+
+    <span class="annotation">@Autowired</span>
+    <span class="keyword">private</span> <span class="class-name">StudentRepository</span> repo;
+
+    <span class="annotation">@GetMapping</span>(<span class="string">"/students/sort"</span>)
+    <span class="keyword">public</span> <span class="class-name">List</span>&lt;<span class="class-name">Student</span>&gt; getSorted() {
+        <span class="keyword">return</span> repo.findAll(<span class="class-name">Sort</span>.by(<span class="string">"marks"</span>).descending());
+    }
+}</code>
+            </div>
+
+            <div class="highlight-box">
+                <p><code>Sort.by("marks").descending()</code> sorts students by marks in <strong>descending order</strong>.</p>
+            </div>
+        </div>
+
+        <!-- Section 11: JPQL -->
+        <div class="section">
+            <h2>JPQL (Java Persistence Query Language)</h2>
+            <p>JPQL is <strong>similar to SQL but works with entity classes and their fields</strong>. It is used in Spring Data JPA to interact with the database and Java objects.</p>
+
+            <h3>Named Queries</h3>
+            <p><strong>Predefined JPQL queries</strong> given a specific name and written inside the entity class. They can be <strong>reused anywhere in the project</strong>.</p>
+            <p>Helps in <strong>reusing queries, improves readability, and reduces runtime query parsing errors</strong>.</p>
+
+            <h4>Syntax:</h4>
+            <div class="code-block">
+                <code><span class="annotation">@NamedQuery</span>(
+    name = <span class="string">"queryName"</span>,
+    query = <span class="string">"JPQL_query"</span>
+)</code>
+            </div>
+
+            <h4>Example:</h4>
+            <div class="code-block">
+                <code><span class="annotation">@Entity</span>
+<span class="annotation">@NamedQuery</span>(
+    name = <span class="string">"Student.findByCity"</span>,
+    query = <span class="string">"SELECT s FROM Student s WHERE s.city = :city"</span>
 )
-public class Student { }</code></pre>
+<span class="keyword">public class</span> <span class="class-name">Student</span> {
+    <span class="comment">// fields and methods</span>
+}</code>
+            </div>
 
-        <h3>Named Native Query</h3>
-        <pre><code>@Entity
-@NamedNativeQuery(
-    name = "Student.query",
-    query = "SELECT * FROM student WHERE marks > :m",
-    resultClass = Student.class
+            <h3>Named Native Query</h3>
+            <p><strong>Predefined SQL query</strong>, not JPQL. Used when SQL is required, database-specific functions are needed, or performance optimization is desired.</p>
+
+            <h4>Syntax:</h4>
+            <div class="code-block">
+                <code><span class="annotation">@NamedNativeQuery</span>(
+    name = <span class="string">"entityName.methodName"</span>,
+    query = <span class="string">"SQL_query"</span>,
+    resultClass = <span class="class-name">EntityClass</span>.<span class="keyword">class</span>
+)</code>
+            </div>
+
+            <h4>Example:</h4>
+            <div class="code-block">
+                <code><span class="annotation">@Entity</span>
+<span class="annotation">@NamedNativeQuery</span>(
+    name = <span class="string">"Student.query"</span>,
+    query = <span class="string">"SELECT * FROM student WHERE marks > :m"</span>,
+    resultClass = <span class="class-name">Student</span>.<span class="keyword">class</span>
 )
-public class Student { }</code></pre>
-    </section>
+<span class="keyword">public class</span> <span class="class-name">Student</span> {
+    <span class="comment">// fields and methods</span>
+}</code>
+            </div>
+        </div>
 
-</main>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <div class="back-to-top" onclick="scrollToTop()">↑</div>
+
+    <script>
+        // Back to top button functionality
+        const backToTopButton = document.querySelector('.back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
